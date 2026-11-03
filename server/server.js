@@ -1,6 +1,6 @@
 // TeamTrack server. Uses Supabase when configured; JSON file is for local development only.
 const http=require('node:http'),fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto');
-const ROOT=path.resolve(__dirname,'..'),PUBLIC_DIR=path.join(ROOT,'public'),DATA_DIR=path.join(ROOT,'data'),DB_FILE=path.join(DATA_DIR,'teamtrack.json');
+const ROOT=path.resolve(__dirname,'..'),PUBLIC_DIR=path.join(ROOT,'dist'),DATA_DIR=path.join(ROOT,'data'),DB_FILE=path.join(DATA_DIR,'teamtrack.json');
 const PORT=Number(process.env.PORT||3000),BOOTSTRAP_KEY=process.env.TEAMTRACK_ADMIN_KEY||'';
 const SUPABASE_URL=(process.env.SUPABASE_URL||'').replace(/\/$/,''),SUPABASE_KEY=process.env.SUPABASE_SECRET_KEY||process.env.SUPABASE_SERVICE_ROLE_KEY||'';
 const REMOTE=!!(SUPABASE_URL&&SUPABASE_KEY),SESSION_SECRET=process.env.TEAMTRACK_SESSION_SECRET||(REMOTE?'':crypto.randomBytes(32).toString('hex'));

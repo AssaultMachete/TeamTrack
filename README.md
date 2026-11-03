@@ -1,28 +1,34 @@
 # TeamTrack
 
-TeamTrack helps teachers organize students, teamwork groups, classroom activities, and assessments across six teamwork skills. It includes a dashboard, student profiles, learning strategies, activity and group management, and CSV reports.
+TeamTrack is a React app for teachers to organize students, teamwork groups, classroom activities, and assessments across six teamwork skills. It includes a dashboard with responsive charts, student profiles, learning strategies, activity and group management, account roles, and CSV reports. Vite builds the React interface; the Node.js server provides the API and serves the production build.
 
 ## Run TeamTrack locally
 
 ### 1. Install Node.js
 
-Install Node.js version 18 or newer. You do not need to install extra packages for this project.
+Install Node.js version 18 or newer.
 
 ### 2. Start the app
 
-Open PowerShell in the TeamTrack project folder and run:
+Open PowerShell in the TeamTrack project folder and install the dependencies:
 
 ```powershell
-npm start
+npm install
 ```
 
-Then open **http://localhost:3000** in your browser. Keep the PowerShell window open while you use the app. To stop the server, focus that window and press **Ctrl+C**.
+For local development, run:
+
+```powershell
+npm run dev
+```
+
+Open **http://localhost:5173** in your browser. This starts the Vite React app and the Node API together. Keep the terminal open while you use TeamTrack. Press **Ctrl+C** to stop both processes.
 
 If you have already created a local account, choose **Sign in** and use that account. For a fresh local setup, create the first administrator before registering:
 
 ```powershell
 $env:TEAMTRACK_ADMIN_KEY = "choose-a-long-private-setup-key"
-npm start
+npm run dev
 ```
 
 On the site, choose **Create an account** and enter the same value in **Admin setup key**. The first account becomes the administrator. Keep the key private. After an administrator exists, new accounts are teachers by default. The setup key is not your sign-in password.
@@ -37,6 +43,8 @@ On the site, choose **Create an account** and enter the same value in **Admin se
 6. **Reports:** Compare initial and latest scores. Use **Export CSV** to download assessment records.
 
 Local accounts and classroom records are stored in `data/teamtrack.json`. This file stays on this computer and is excluded from Git. Local data does not automatically transfer to a hosted site.
+
+To preview a production build locally, run `npm start` and open **http://localhost:3000**. This builds the React app into `dist/`, then starts the Node server.
 
 ## Deploy online for free (Render + Supabase)
 
@@ -101,12 +109,16 @@ Free hosting has limits and can change. Render may put a free service to sleep w
 ## Folder layout
 
 ```text
-public/                 Browser files served to visitors
-  assets/css/           Stylesheets
-  assets/js/            App interface and interactions
+index.html              Vite entry point
+src/                    React application and styles
+  App.jsx               React pages, charts, dialogs, and workflows
+  main.jsx              React application entry point
+  styles.css            Application styles
 server/                 Node.js backend and API
 database/               Supabase SQL schema
 data/                   Local-only JSON data (excluded from Git)
+dist/                   Generated production bundle (excluded from Git)
+vite.config.js           Vite configuration and local API proxy
 package.json            Start command and Node version
 README.md               Local usage and deployment guide
 ```
