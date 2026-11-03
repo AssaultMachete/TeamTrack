@@ -1,61 +1,112 @@
 # TeamTrack
 
-## First try it on your computer
+TeamTrack helps teachers organize students, teamwork groups, classroom activities, and assessments across six teamwork skills. It includes a dashboard, student profiles, learning strategies, activity and group management, and CSV reports.
 
-Install Node.js 18 or newer. In PowerShell, open this folder and run:
+## Run TeamTrack locally
 
-```powershell
-$env:TEAMTRACK_ADMIN_KEY = "choose-a-private-setup-key"
-node server.js
-```
+### 1. Install Node.js
 
-Open http://localhost:3000. Create the first account and enter that setup key to make it an administrator. Local mode stores data in `data/teamtrack.json`.
+Install Node.js version 18 or newer. You do not need to install extra packages for this project.
 
-## Free hosted setup (Render + Supabase)
+### 2. Start the app
 
-The local JSON file is only for trying the app on your computer. Use Supabase for hosted data so Render restarts do not erase accounts and class records.
-
-### A. Prepare the database
-
-1. Create a free Supabase project.
-2. In Supabase, open **SQL Editor**, choose **New query**, paste the contents of `supabase-schema.sql`, and click **Run**.
-3. In **Project Settings → API Keys**, copy the **Project URL** and create/copy a **Secret key**. Keep the secret private. It belongs only in the Render server environment, never in browser code or GitHub.
-
-### B. Publish the code
-
-1. Create a private GitHub repository and upload this project, including `server.js`, `package.json`, `app.js`, `styles.css`, `index.html`, and `supabase-schema.sql`. Do not upload keys or a `.env` file.
-2. In Render, choose **New → Web Service**, connect that GitHub repository, and select the **Free** instance.
-3. Use build command `npm install` and start command `npm start`.
-4. In the Render service's **Environment** settings, add:
-   - `SUPABASE_URL` = the Project URL from Supabase
-   - `SUPABASE_SECRET_KEY` = the Supabase Secret key
-   - `TEAMTRACK_SESSION_SECRET` = a long random secret (generate it with the PowerShell command below)
-   - `TEAMTRACK_ADMIN_KEY` = a different long random setup key
-   - `NODE_ENV` = `production`
-5. Save and deploy. Open the Render `onrender.com` address when deployment finishes.
-6. On that hosted page, create your first account and enter the admin setup key. This hosted administrator is a new account; a local account is not copied automatically.
-
-To generate two separate random values in PowerShell:
+Open PowerShell in the TeamTrack project folder and run:
 
 ```powershell
-[guid]::NewGuid().ToString() + [guid]::NewGuid().ToString()
+npm start
 ```
 
-Run it twice: use one result for `TEAMTRACK_SESSION_SECRET` and the other for `TEAMTRACK_ADMIN_KEY`. Treat both as private. The setup key is only for establishing an admin role when no admin exists. Store the actual admin email and password safely; that is what you use to sign in.
+Then open **http://localhost:3000** in your browser. Keep the PowerShell window open while you use the app. To stop the server, focus that window and press **Ctrl+C**.
 
-### C. Add teachers
+If you have already created a local account, choose **Sign in** and use that account. For a fresh local setup, create the first administrator before registering:
 
-Share the deployed website address with the teachers. Each teacher selects **Create an account**, registers with their own name, email, and password, and signs in. Their accounts are teacher accounts by default. The administrator can use **Admin** in the sidebar to view accounts and promote a trusted teacher to admin. All accounts on this version work in one shared classroom workspace, so teachers see the same student, activity, group, and assessment data.
+```powershell
+$env:TEAMTRACK_ADMIN_KEY = "choose-a-long-private-setup-key"
+npm start
+```
 
-Signup is currently open to anyone who has the website address. Do not post the address publicly if you only want invited teachers using it. Invite-only registration is not implemented yet.
+On the site, choose **Create an account** and enter the same value in **Admin setup key**. The first account becomes the administrator. Keep the key private. After an administrator exists, new accounts are teachers by default. The setup key is not your sign-in password.
 
-## Important free-tier limits
+### 3. Use the app
 
-Render's free web service can sleep after inactivity, so the first page load after a quiet period may take a little while. Supabase's free database can pause after a period of low activity. Check the current limits before relying on the site for important records. Back up the database periodically from Supabase. The Supabase secret key gives the backend broad database access; never put it in frontend files, source control, or messages.
+1. **Students:** Add students with their name, ID, grade, and group. Select a student's name to open their profile.
+2. **Groups:** Create groups and assign students to them.
+3. **Learning Strategies:** Browse the built-in strategies or create a custom one.
+4. **Activities:** Create an activity, choose a strategy and group, set its date and instructions, and mark it completed when finished.
+5. **Assessments:** Open Assessments or use the assessment button beside a student. Choose Initial, Ongoing, or Final, rate the six skills from 1 to 5, and save observations.
+6. **Reports:** Compare initial and latest scores. Use **Export CSV** to download assessment records.
 
-## Backend routes
+Local accounts and classroom records are stored in `data/teamtrack.json`. This file stays on this computer and is excluded from Git. Local data does not automatically transfer to a hosted site.
+
+## Deploy online for free (Render + Supabase)
+
+The hosted app uses Supabase for persistent accounts and classroom data. Render runs the website and backend. The hosted version has its own accounts and data; a local account is not copied over automatically.
+
+### A. Create and prepare the Supabase project
+
+1. Create a Supabase project.
+2. In the Supabase dashboard, choose **SQL Editor → New query**.
+3. Open `database/supabase-schema.sql`, copy all of its contents into the query, and click **Run**. This creates the tables TeamTrack needs.
+4. Find the **Project URL** from the project's **Connect** dialog or **Integrations → Data API**. It looks like `https://your-project-id.supabase.co`.
+5. In **Project Settings → API Keys**, copy or create a **Secret key**. This key must only be used by the backend. Never add it to browser code, GitHub, or a message.
+
+### B. Put the project on GitHub
+
+1. Create a **private** GitHub repository.
+2. Upload the project folders and files: `public/`, `server/`, `database/`, `package.json`, `README.md`, and `.gitignore`.
+3. Do not upload `.env` files, passwords, API keys, or the local `data/` folder. `.gitignore` excludes local data automatically.
+
+### C. Create the Render service
+
+1. In Render, choose **New → Web Service** and connect the private GitHub repository.
+2. Select the **Free** instance and set:
+   - **Build command:** `npm install`
+   - **Start command:** `npm start`
+3. In the service's **Environment** settings, add these variables:
+
+   | Variable | Value |
+   | --- | --- |
+   | `SUPABASE_URL` | Your Supabase Project URL |
+   | `SUPABASE_SECRET_KEY` | Your Supabase Secret key |
+   | `TEAMTRACK_SESSION_SECRET` | A long random value; keep it private |
+   | `TEAMTRACK_ADMIN_KEY` | A different long random value; keep it private |
+   | `NODE_ENV` | `production` |
+
+   Generate a random value in PowerShell by running this command. Run it twice to get separate values for the session secret and admin setup key:
+
+   ```powershell
+   [guid]::NewGuid().ToString() + [guid]::NewGuid().ToString()
+   ```
+
+4. Save the environment settings and deploy. When Render finishes, open the `onrender.com` address shown for the service.
+5. On the hosted site, choose **Create an account** and enter the `TEAMTRACK_ADMIN_KEY` value. That creates the first hosted administrator. Save the admin email and password; those are used to sign in. You only need the setup key when establishing an admin while no admin account exists.
+
+### D. Add teachers
+
+Share the hosted website address with your teachers. Each teacher selects **Create an account**, registers with their own name, email, and password, then signs in. Their role is **teacher** by default. An administrator can use **Admin** in the sidebar to view accounts and promote a trusted teacher to admin.
+
+All accounts on this version use one shared classroom workspace. Teachers can see and manage the same student roster, groups, activities, and assessment data. Registration is open to anyone who has the address; invite-only registration is not implemented.
+
+## Free hosting notes
+
+Free hosting has limits and can change. Render may put a free service to sleep when unused, so the first visit after inactivity can be slow. Supabase may pause a free project after a period of low activity. Check the providers' current terms and back up important records from Supabase. Test the deployed app with sample data before relying on it for classroom records.
+
+## Backend API routes
 
 - `POST /api/auth/register`, `POST /api/auth/login`, `POST /api/auth/logout`, `GET /api/auth/me`
 - `GET /api/state`, `PUT /api/state`
 - `GET /api/admin/users`, `PATCH /api/admin/users`
 - `GET /api/health`
+
+## Folder layout
+
+```text
+public/                 Browser files served to visitors
+  assets/css/           Stylesheets
+  assets/js/            App interface and interactions
+server/                 Node.js backend and API
+database/               Supabase SQL schema
+data/                   Local-only JSON data (excluded from Git)
+package.json            Start command and Node version
+README.md               Local usage and deployment guide
+```
